@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: True
+  become: yes
+  become_user: vagrant
+  roles:
+   - { role: tomcat }

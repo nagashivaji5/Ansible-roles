@@ -1,0 +1,36 @@
+---
+- stat: path=/usr/local/tomcat
+  register: tc
+
+- name: Download Tomcat
+  get_url: url=http://www-eu.apache.org/dist/tomcat/tomcat-7/v7.0.81/bin/apache-tomcat-{{ tomcat_version }}.tar.gz dest=/tmp mode=0755
+  when: tc.stat.isdir is undefined  
+
+- name: Unpack Tomcat
+  unarchive: src=/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz dest=/usr/local/ copy=no
+  when: tc.stat.isdir is undefined
+
+- name: Change Tomcat Directory Name
+  command: mv /usr/local/apache-tomcat-{{ tomcat_version }} /usr/local/tomcat
+  when: tc.stat.isdir is undefined
+
+- name: Upload server.xml with modified Changes
+  template: src=server.xml dest=/usr/local/tomcat/conf
+  when: tc.stat.isdir is undefined
+          
+- name: Upload tomcat-users.xml with users added
+  template: src=tomcat-users.xml  dest=/usr/local/tomcat/conf
+  when: tc.stat.isdir is undefined
+ 
+- name: Copy the War file to the tomcat dir
+  command: cp -r /tmp/SampleTest/SampleTest/target/SampleTest.war /usr/local/tomcat/webapps
+
+- name: Source Bashrc
+  shell: "{{ item }}"
+  with_items:
+    - source ~/.bashrc
+    - nohup /usr/local/tomcat/bin/startup.sh &    
+
+- name: Wait for Tomcat to Start on Port 8084
+  wait_for: host=172.16.202.96 port={{ http_port }}
+

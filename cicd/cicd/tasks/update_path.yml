@@ -1,0 +1,28 @@
+---
+ - name: read the bashrc file
+   shell: cat ~/.bashrc
+   register: bashrc
+
+ - name: Set Java HOME
+   lineinfile: dest=~/.bashrc regexp='^JAVA_HOME'>
+                 line="export JAVA_HOME=/usr/local/jdk/"
+   when: bashrc.stdout.find('JAVA_HOME') == -1
+
+ - name: set M2_HOME
+   lineinfile: dest=~/.bashrc regexp='^M2_HOME'>
+                 line="export M2_HOME=/usr/local/maven"
+   when: bashrc.stdout.find('M2_HOME') == -1
+
+
+ - name: Set M2
+   lineinfile: dest=~/.bashrc regexp='^M2'>
+                 line="export M2=$M2_HOME/bin"
+   when: bashrc.stdout.find('M2') == -1
+ 
+ - name: Set JAVA/MAVEN PATH
+   lineinfile: dest=~/.bashrc regexp='^JAVA_HOME'>
+                 line="export PATH=$M2:$PATH:/usr/local/jdk/bin"
+   when: bashrc.stdout.find('PATH') == -1
+ 
+ - name: Source Bashrc
+   shell: . ~/.bashrc 

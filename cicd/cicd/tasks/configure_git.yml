@@ -1,0 +1,13 @@
+---
+ - stat: path=/tmp/SampleTest
+   register: sampletest
+ 
+ - name: Install git package (RedHat based)
+   yum: name=git state=present
+
+ - name: Remove the existing source code
+   file: path=/tmp/SampleTest state=absent
+   when: sampletest.stat.isdir is defined
+
+ - name: Clone the git Repository 
+   git: repo=https://github.com/jagadish12/SampleTest.git dest=/tmp/SampleTest

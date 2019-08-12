@@ -1,0 +1,3 @@
+tomcat_version: 7.0.81
+http_port: 8084
+maven_version: 3.5.0

@@ -1,0 +1,20 @@
+---
+ - stat: path=/usr/local/jdk
+   register: jdk
+
+ - debug: msg={{ jdk.stat.isdir }}
+  
+ - name: Install Java
+   copy: src=jdk-8u144-linux-x64.tar.gz dest=/tmp mode=0755   
+   when: jdk.stat.isdir is undefined 
+
+ - name: Unpack JAVA
+   unarchive: src=/tmp/jdk-8u144-linux-x64.tar.gz dest=/usr/local/ copy=no
+   when: jdk.stat.isdir is undefined
+
+ - name: Change Java Directory Name
+   command: mv /usr/local/jdk1.8.0_144 /usr/local/jdk
+   when: jdk.stat.isdir is undefined
+
+
+ 

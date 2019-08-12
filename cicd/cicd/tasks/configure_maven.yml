@@ -1,0 +1,19 @@
+---
+ - stat: path=/usr/local/maven
+   register: mvn
+ 
+ - name: Download Maven
+   get_url: url=http://www-us.apache.org/dist/maven/maven-3/{{ maven_version}}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz dest=/tmp mode=0755
+   when: mvn.stat.isdir is undefined
+
+ - name: Unpack Maven
+   unarchive: src=/tmp/apache-maven-{{ maven_version }}-bin.tar.gz dest=/usr/local/ copy=no
+   when: mvn.stat.isdir is undefined
+
+ - name: Change Maven Directory Name
+   command: mv /usr/local/apache-maven-{{ maven_version }} /usr/local/maven
+   when: mvn.stat.isdir is undefined
+
+ - name: Build the code
+   command: mvn clean package -f /tmp/SampleTest/SampleTest/pom.xml
+
